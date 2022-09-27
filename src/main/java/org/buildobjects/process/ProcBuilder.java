@@ -28,6 +28,7 @@ public class ProcBuilder {
     private File directory;
 
     private StreamConsumer outputConsumer;
+    private Proc.IProcessStartedListener processStartedListener;
     private StreamConsumer errorConsumer;
     private boolean clearEnvironment;
 
@@ -49,6 +50,17 @@ public class ProcBuilder {
      * */
     public ProcBuilder withArg(String arg) {
         args.add(arg);
+        return this;
+
+    }
+
+    /**
+     * Set the process started listener
+     * @param processStartedListener the process started listener to set
+     * @return this, for chaining
+     * */
+    public ProcBuilder withProcessStartedListener(Proc.IProcessStartedListener processStartedListener) {
+        this.processStartedListener = processStartedListener;
         return this;
 
     }
@@ -220,7 +232,7 @@ public class ProcBuilder {
         }
 
         try {
-            Proc proc = new Proc(command, args, env, clearEnvironment, stdin, outputConsumer != null ? outputConsumer : stdout , directory, timoutMillis, errorConsumer != null ? errorConsumer : stderr);
+            Proc proc = new Proc(command, args, env, clearEnvironment, stdin, outputConsumer != null ? outputConsumer : stdout , directory, timoutMillis, errorConsumer != null ? errorConsumer : stderr, processStartedListener);
 
             final ByteArrayOutputStream output = defaultStdout == stdout && outputConsumer == null ? defaultStdout : null;
 

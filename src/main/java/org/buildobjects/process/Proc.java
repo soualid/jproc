@@ -32,6 +32,10 @@ class Proc implements EventSink {
     private final BlockingQueue<ExecutionEvent> eventQueue = new LinkedBlockingQueue<ExecutionEvent>();
     private final IoHandler ioHandler;
 
+    public static interface IProcessStartedListener {
+        void processStarted(Process process);
+    }
+
     public Proc(String command,
                 List<String> args,
                 Map<String, String> env,
@@ -40,7 +44,8 @@ class Proc implements EventSink {
                 Object stdout,
                 File directory,
                 Long timeout,
-                Object stderr)
+                Object stderr,
+                IProcessStartedListener processStartedListener)
             throws StartupException, TimeoutException, ExternalProcessFailureException {
 
         this.command = command;
@@ -61,6 +66,9 @@ class Proc implements EventSink {
 
             builder.environment().putAll(env);
             process = builder.start();
+            if (processStartedListener != null) {
+                processStartedListener.processStarted(process);
+            }
 
             stdoutConsumer = createStreamConsumer(stdout);
 

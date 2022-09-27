@@ -1,3 +1,5 @@
+build
+.gradle
 jproc.iml
 target/
 .idea/
